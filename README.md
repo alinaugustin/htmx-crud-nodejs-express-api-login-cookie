@@ -42,7 +42,7 @@ htmx-login-app
 
 1. Start the application:
    ```
-   npm start
+   npm run start
    ```
 
 2. Open your browser and navigate to `http://localhost:3000` to access the login page.
