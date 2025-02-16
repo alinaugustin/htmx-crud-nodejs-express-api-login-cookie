@@ -1,6 +1,6 @@
 # HTMX Login App
 
-This project is a simple login application built with Node.js, Express, and HTMX. It demonstrates how to handle user authentication with cookies and dynamic page updates.
+This project is a simple login and CRUD application built with Node.js, Express, and HTMX. It demonstrates how to handle user authentication with cookies and dynamic page updates.
 
 ## Project Structure
 
