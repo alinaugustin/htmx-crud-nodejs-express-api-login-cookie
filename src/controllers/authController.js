@@ -2,6 +2,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const xss = require('xss');
+const fs = require('fs');
+const path = require('path');
 
 const users = [
     {
@@ -57,7 +59,24 @@ const authController = {
         //res.send('Logout successful');
         //res.send('<p>You have been logged out. <a href="/login">Login again</a></p>');.
         //res.redirect('/login');
-        res.send('<script>window.location.href="/login";</script>');
+        res.send('<script>window.location.href="/";</script>');
+    },
+
+    getLoginForm: (req, res) => {
+        console.log("getLoginForm called"); // Add this line
+        const csrfToken = req.csrfToken();
+        console.log("CSRF Token:", csrfToken); // Add this line
+        const loginFilePath = path.join(__dirname, '../views/login.html');
+        fs.readFile(loginFilePath, 'utf8', (err, data) => {
+            if (err) {
+                console.error("Error reading login.html:", err);
+                return res.status(500).send('Server error');
+            }
+            console.log("login.html content:", data); // Add this line
+            const modifiedData = data.replace('{{csrfToken}}', csrfToken);
+            console.log("Modified HTML:", modifiedData); // Add this line
+            res.send(modifiedData);
+        });
     }
 };
 

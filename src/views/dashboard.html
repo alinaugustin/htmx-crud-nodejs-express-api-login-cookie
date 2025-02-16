@@ -15,13 +15,14 @@
             <div class="flex justify-between items-center">
                 <div class="text-white text-lg font-bold">My App</div>
                 <div class="flex items-center">
-                    <a href="/login"
+                    <a href="/auth/login"
                         class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
                     <a href="/dashboard"
                         class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
                     <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
                     <form id="logout-form" hx-post="/auth/logout" hx-target="#dashboard-content" hx-swap="outerHTML"
                         class="inline">
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
                         <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded ml-4">Logout</button>
                     </form>
                 </div>
@@ -74,6 +75,7 @@
                 <div class="mt-2">
                     <form id="edit-user-form" action='/users/edit' method="POST" hx-put="/users/edit"
                         hx-target="#users-results" hx-swap="outerHTML">
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
                         <input type="hidden" id="edit-user-id" name="id">
                         <div class="mb-4">
                             <label for="edit-user-name" class="block text-sm font-medium text-gray-700">Name</label>
@@ -105,6 +107,7 @@
                 <div class="mt-2">
                     <form id="add-user-form" action='/users/add' method="POST" hx-post="/users/add"
                         hx-target="#users-results" hx-swap="outerHTML">
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
                         <div class="mb-4">
                             <label for="add-user-name" class="block text-sm font-medium text-gray-700">Name</label>
                             <input type="text" id="add-user-name" name="name"
@@ -154,7 +157,8 @@
             fetch(`/users/delete/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    'HX-Request': 'true'
+                    'HX-Request': 'true',
+                    'X-CSRF-Token': '{{csrfToken}}' // Include CSRF token in headers
                 }
             }).then(response => {
                 if (response.ok) {
@@ -174,7 +178,8 @@
                 body: formData,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'HX-Request': 'true'
+                    'HX-Request': 'true',
+                    'X-CSRF-Token': '{{csrfToken}}' // Include CSRF token in headers
                 }
             }).then(response => {
                 if (response.ok) {
@@ -195,7 +200,8 @@
                 body: formData,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'HX-Request': 'true'
+                    'HX-Request': 'true',
+                    'X-CSRF-Token': '{{csrfToken}}' // Include CSRF token in headers
                 }
             }).then(response => {
                 if (response.ok) {

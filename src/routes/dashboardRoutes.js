@@ -1,12 +1,12 @@
 const express = require('express');
-const path = require('path');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
+const fs = require('fs');
+const path = require('path');
 
 let users = [
-    { id: 1, name: 'John Doe', email: 'john.doe@gmail.com' },
-    { id: 2, name: 'Bob Williams', email: 'bob.williams@gmail.com' },
-    { id: 3, name: 'Shannon Jackson', email: 'shannon.jackson@gmail.com' },
+    { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
+    { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' },
 ];
 
 router.get('/users', authMiddleware, (req, res) => {
@@ -27,9 +27,15 @@ router.get('/users', authMiddleware, (req, res) => {
 
 router.put('/users/edit', authMiddleware, (req, res) => {
     const { id, name, email } = req.body;
-    console.log('req.body: ', req.body);
+    const userId = parseInt(id);
 
-    users = users.map(user => user.id === parseInt(id) ? { ...user, name, email } : user);
+    const userIndex = users.findIndex(user => user.id === userId);
+
+    if (userIndex === -1) {
+        return res.status(404).send('User not found');
+    }
+
+    users[userIndex] = { id: userId, name, email };
 
     const userRows = users.map(user => `
         <tr>
@@ -87,7 +93,16 @@ router.delete('/users/delete/:id', authMiddleware, (req, res) => {
 });
 
 router.get('/dashboard', authMiddleware, (req, res) => {
-    res.sendFile(path.join(__dirname, '../views/dashboard.html'));
+    const csrfToken = req.csrfToken();
+    const dashboardFilePath = path.join(__dirname, '../views/dashboard.html');
+    fs.readFile(dashboardFilePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Server error');
+        }
+        const modifiedData = data.replace(/{{csrfToken}}/g, csrfToken);
+        res.send(modifiedData);
+    });
 });
 
 module.exports = router;
