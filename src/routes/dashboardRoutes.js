@@ -3,6 +3,7 @@ const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
 const fs = require('fs');
 const path = require('path');
+const xss = require('xss');
 
 let users = [
     { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
@@ -26,7 +27,9 @@ router.get('/users', authMiddleware, (req, res) => {
 });
 
 router.put('/users/edit', authMiddleware, (req, res) => {
-    const { id, name, email } = req.body;
+    const id = xss(req.body.id);
+    const name = xss(req.body.name);
+    const email = xss(req.body.email);
     const userId = parseInt(id);
 
     const userIndex = users.findIndex(user => user.id === userId);
@@ -53,7 +56,8 @@ router.put('/users/edit', authMiddleware, (req, res) => {
 });
 
 router.post('/users/add', authMiddleware, (req, res) => {
-    const { name, email } = req.body;
+    const name = xss(req.body.name);
+    const email = xss(req.body.email);
     const id = users.length ? users[users.length - 1].id + 1 : 1;
     const newUser = { id, name, email };
     users.push(newUser);
