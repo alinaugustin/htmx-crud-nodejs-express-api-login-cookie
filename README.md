@@ -35,7 +35,7 @@ htmx-login-app
 
 3. Create a `.env` file in the root directory and add your environment variables. For example:
    ```
-   SESSION_SECRET=your_secret_key
+   JWT_SECRET=your_jwt_secret_key_here
    ```
 
 ## Usage
