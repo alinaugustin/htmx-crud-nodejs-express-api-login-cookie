@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="../../public/css/tailwind.min.css">
 </head>
 
 <body class="bg-gray-100">
@@ -13,16 +13,17 @@
     <nav class="bg-gray-800 p-4">
         <div class="container mx-auto">
             <div class="flex justify-between items-center">
-                <div class="text-white text-lg font-bold">My App</div>
-                <div class="flex items-center">
-                    <a href="/auth/login"
-                        class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
-                    <a href="/dashboard"
-                        class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                <div class="text-white text-lg font-bold">
                     <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                    <form id="logout-form" hx-post="/auth/logout" hx-target="#dashboard-content" hx-swap="outerHTML"
-                        class="inline">
+                </div>
+                <div class="flex items-center">
+                    <a href="/dashboard" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                    <a href="/sites" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sites</a>
+                    <a href="/auth/register" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
+                    
+                    <form id="logout-form" hx-post="/auth/logout" hx-target="#dashboard-content" hx-swap="outerHTML" class="inline">
                         <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                        <a id="login-link" href="/auth/login" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
                         <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded ml-4">Logout</button>
                     </form>
                 </div>
@@ -32,9 +33,14 @@
 
     <div class="container mx-auto p-4">
         <h1 class="text-2xl font-bold mb-4">Welcome to the Dashboard!</h1>
-        <p class="mb-4">You are successfully logged in.</p>
-        <button class="bg-green-500 text-white px-4 py-2 rounded mb-4" onclick="openAddUserModal()">Add New
-            User</button>
+        <!-- <p class="mb-4">You are successfully logged in.</p> -->
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold">User Details:</h2>
+            <p><strong>Name:</strong> {{user.name}}</p>
+            <p><strong>Email:</strong> {{user.email}}</p>
+        </div>
+        <button class="bg-green-500 text-white px-4 py-2 rounded mb-4" onclick="openAddUserModal()">Add New User</button>
+        <button class="bg-blue-500 text-white px-4 py-2 rounded mb-4" onclick="generatePdf()">Generate PDF</button>
         <div id="dashboard-content" class="mt-4">
             <span class="htmx-indicator" id="loading">
                 <img src="/img/loader.gif" alt="Loading..." class="m-auto h-10" />
@@ -130,8 +136,29 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+    <footer class="bg-gray-800 p-4 mt-8">
+        <div class="container mx-auto text-center text-white">
+            <p>&copy; 2025 Your Company. All rights reserved.</p>
+        </div>
+    </footer>
+    
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let isLoggedInValue = {{isLoggedIn}}; // Ensure this variable is correctly set
+            let loginLink = document.getElementById('login-link');
+            if (isLoggedInValue) {
+                loginLink.style.display = 'none';
+            } else {
+                loginLink.style.display = 'inline-block';
+            }
+            let registerLink = document.querySelector('a[href="/auth/register"]');
+            if (isLoggedInValue) {
+                registerLink.style.display = 'none';
+            } else {
+                registerLink.style.display = 'inline-block';
+            }
+        });
+
         function openEditModal(id, name, email) {
             document.getElementById('edit-user-id').value = id;
             document.getElementById('edit-user-name').value = name;
@@ -140,9 +167,7 @@
         }
 
         function closeModal() {
-            console.log('initialise closeModal');
             document.getElementById('edit-user-modal').classList.add('hidden');
-            console.log('closeModal finished');
         }
 
         function openAddUserModal() {
@@ -212,7 +237,13 @@
                 console.error('Error:', error);
             });
         });
+
+        function generatePdf() {
+            window.location.href = '/users/pdf';
+        }
     </script>
+
+    <script src="../public/js/htmx.min.js"></script>
 </body>
 
 </html>

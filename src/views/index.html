@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"> -->
+    <link rel="stylesheet" href="../../public/css/tailwind.min.css">
 </head>
 
 <body class="bg-gray-100">
@@ -13,13 +14,16 @@
     <nav class="bg-gray-800 p-4">
         <div class="container mx-auto">
             <div class="flex justify-between items-center">
-                <div class="text-white text-lg font-bold">My App</div>
+                <div class="text-white text-lg font-bold">
+                    <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                </div>
                 <div>
                     <a href="/auth/login"
                         class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                    <a href="/auth/register"
+                        class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
                     <a href="/dashboard"
                         class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                    <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
                 </div>
             </div>
         </div>
@@ -37,7 +41,16 @@
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline block text-center">Go
                 to Dashboard</a>
         </div>
+        
     </div>
+    
+    <footer class="bg-gray-800 p-4 mt-8">
+        <div class="container mx-auto text-center text-white">
+            <p>&copy; 2025 Your Company. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../public/js/htmx.min.js"></script>
 </body>
 
 </html>

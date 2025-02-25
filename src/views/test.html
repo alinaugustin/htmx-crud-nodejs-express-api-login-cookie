@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test HTMX After Request</title>
+    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+    <link rel="stylesheet" href="../../public/css/tailwind.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold mb-6">Test HTMX After Request</h2>
+
+            <!-- Response Display Section -->
+            <div id="response-display" class="mb-6">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Server Response:</h3>
+                    <div id="response-status" class="mb-2"></div>
+                    <div class="space-y-2">
+                        <div id="response-message" class="bg-white p-3 rounded border"></div>
+                        <div id="response-timestamp" class="text-sm text-gray-600"></div>
+                        <div id="response-details" class="bg-white p-3 rounded border mt-2">
+                            <pre id="response-json" class="text-sm overflow-x-auto"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Existing notification div -->
+            <div id="notification" class="hidden mb-4 p-4 rounded">
+                <span id="notification-message" class="block mb-2 font-bold">Notification area:</span>
+                <div id="response-details" class="text-sm"></div>
+            </div>
+
+            <form id="test-form" 
+                hx-post="/test/submit" 
+                hx-target="#notification"
+                hx-swap="none"
+                hx-on="afterRequest:handleTestResponse"
+                class="space-y-4">
+                
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="message">
+                        Message
+                    </label>
+                    <input 
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" 
+                        id="message" 
+                        name="message" 
+                        type="text" 
+                        required>
+                </div>
+
+                <button 
+                    class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    type="submit">
+                    Submit Test
+                </button>
+            </form>
+        </div>
+        <br>
+        <br>
+        <!-- new button test submit outside the form -->
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <button 
+                class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                hx-post="/test/submitoutside" 
+                hx-target="#notification"
+                hx-swap="none"
+                hx-on="afterRequest:testOutsideResponse"
+                hx-headers='{"X-CSRF-Token": "{{csrfToken}}"}'
+                type="button">
+                Submit Test Outside Form
+            </button>
+        </div>
+        <!-- end of new button test submit outside the form -->
+    </div>
+
+    <script>
+        function handleTestResponse(event) {
+            console.log('Test response:', event.detail);
+            const response = event.detail.xhr;
+            try {
+                const responseData = JSON.parse(response.responseText);
+                
+                // Update response display
+                const statusDiv = document.getElementById('response-status');
+                const messageDiv = document.getElementById('response-message');
+                const timestampDiv = document.getElementById('response-timestamp');
+                const jsonDiv = document.getElementById('response-json');
+                
+                // Set status indicator
+                statusDiv.innerHTML = responseData.success ? 
+                    '<div class="text-green-600 font-semibold">✓ Success</div>' :
+                    '<div class="text-red-600 font-semibold">✗ Error</div>';
+                
+                // Set message
+                messageDiv.textContent = responseData.message || responseData.error;
+                
+                // Set timestamp
+                timestampDiv.textContent = `Received at: ${new Date().toLocaleTimeString()}`;
+                
+                // Set full response JSON
+                jsonDiv.textContent = JSON.stringify(responseData, null, 2);
+
+                if (responseData.success) {
+                    // Redirect after showing response
+                    setTimeout(() => {
+                        window.location.href = responseData.redirect;
+                    }, 2000);
+                }
+            } catch (e) {
+                console.error('Error parsing response:', e);
+                document.getElementById('response-status').innerHTML = 
+                    '<div class="text-red-600 font-semibold">✗ Parse Error</div>';
+                document.getElementById('response-message').textContent = 
+                    'Failed to process server response';
+            }
+        }
+
+        function testOutsideResponse(event) {
+            console.log('Test outside response:', event.detail);
+            handleTestResponse(event);
+        }
+    </script>
+</body>
+</html>

@@ -8,45 +8,60 @@ const path = require('path');
 const users = [
     {
         id: 1,
-        username: 'user',
+        name: 'user1',
+        email: 'user1@rocnee.ro',
+        password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
+    },
+    {
+        id: 2,
+        name: 'user2',
+        email: 'user2@rocnee.ro',
+        password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
+    },
+    {
+        id: 3,
+        name: 'user3',
+        email: 'user3@rocnee.ro',
         password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
     }
 ];
 
 
-const findUserByUsername = (username) => {
-    return users.find(user => user.username === username);
+const findUserByname = (name) => {
+    return users.find(user => user.name === name);
 };
 
 const authController = {
     login: async (req, res) => {
-        //const { username, password } = req.body;
-        const username = xss(req.body.username);
+        //const { name, password } = req.body;
+        const name = xss(req.body.username);
         const password = xss(req.body.password);
-        console.log('password: ', password);
+        console.log('name + password: ', name + " : " + password);
         try {
-            const user = findUserByUsername(username);
+            const user = findUserByname(name);
             console.log('user: ', user);
             if (!user) {
-                return res.status(401).send('<p> Invalid1 username or password. <br> <a href="/login">Login here</a></p>');
+                return res.status(401).send('<p> Invalid1 name or password. <br> <a href="/auth/login">Login here</a></p>');
             }
             console.log('user?.password: ', user?.password);
             const isMatch = await bcrypt.compare(password, user?.password);
             //const isMatch = await bcrypt.compare('password', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36Zf4a2Z8F6k6Q8z1F9Z5eW');
             console.log('isMatch: ', isMatch);
             if (!isMatch) {
-                return res.status(401).send('<p>Invalid3 username or password. <br> <a href="/login">Login here</a></p>');
+                return res.status(401).send('<p>Invalid3 name or password. <br> <a href="/auth/login">Login here</a></p>');
             }
 
             setTimeout(async () => {
                 // Create a session and set a cookie
                 const idd = user.id;
+                const name = user.name;
+                const email = user.email;
                 console.log('process.env.JWT_SECRET: ', process.env.JWT_SECRET);
-                const token = jwt.sign({ id: idd }, process.env.JWT_SECRET, { expiresIn: '15min' });
-                res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+                const token = jwt.sign({ id: idd, name: name, email:email }, process.env.JWT_SECRET, { expiresIn: '15min' });
+                res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
                 //res.send('Login successful');
                 res.redirect('/dashboard');
-            }, 100);
+            }, 1000);
 
         } catch (error) {
             console.error(error);
@@ -72,9 +87,9 @@ const authController = {
                 console.error("Error reading login.html:", err);
                 return res.status(500).send('Server error');
             }
-            console.log("login.html content:", data); // Add this line
+            //console.log("login.html content:", data); // Add this line
             const modifiedData = data.replace('{{csrfToken}}', csrfToken);
-            console.log("Modified HTML:", modifiedData); // Add this line
+            //console.log("Modified HTML:", modifiedData); // Add this line
             res.send(modifiedData);
         });
     }
