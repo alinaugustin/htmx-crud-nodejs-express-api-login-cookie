@@ -86,7 +86,8 @@
   <form hx-post="/auth/register" 
         hx-trigger="submit" 
         hx-target="#response-container"
-        hx-on::after-request="processResponse(event)">
+        hx-on::after-request="processResponse(event)"
+        id="register-form">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div>
         <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
@@ -170,6 +171,85 @@
     </div>
     
   <script>
+    let captchaText = '';
+
+function showNotification(message, type = 'error', duration = 5000) {
+    const notification = document.getElementById('notification');
+    const messageElement = document.getElementById('notification-message');
+
+    // Update notification class based on type
+    notification.classList.remove('success', 'error');
+    notification.classList.add(type);
+
+    messageElement.textContent = message;
+    notification.style.display = 'block';
+
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, duration);
+}
+
+          function generateCaptcha() {
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            captchaText = '';
+            for (let i = 0; i < 6; i++) {
+                captchaText += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('captcha-display').textContent = captchaText;
+        }
+
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            const captchaInput = document.getElementById('captcha-input').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email)) {
+                showNotification('Adresa de email nu este validă', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                showNotification('Parola trebuie să aibă cel puțin 8 caractere!', 'error');
+                return;
+            }
+
+            if (captchaInput.toUpperCase() !== captchaText) {
+                showNotification('Codul de verificare este incorect!', 'error');
+                generateCaptcha();
+                document.getElementById('captcha-input').value = '';
+                return;
+            }
+
+            // Let HTMX handle the form submission
+            // The handleRegistrationResponse function will handle the redirect after successful registration
+            // through the response from the server
+        });
+
+      // Add client-side password validation
+      document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+            
+            if (!passwordRegex.test(password)) {
+                e.target.setCustomValidity('Parola trebuie să conțină cel puțin 8 caractere, o literă, o cifră și un caracter special');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+
+        document.getElementById('email').addEventListener('input', function(e) {
+            const email = e.target.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!emailRegex.test(email)) {
+                e.target.setCustomValidity('Adresa de email nu este validă');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+
     function processResponse(event) {
       // Only process successful responses
       console.log('event.detail: ',event.detail);
@@ -211,6 +291,11 @@
         document.querySelector('form').reset();
       }
     }
+
+    // Generate initial captcha on page load
+    document.addEventListener('DOMContentLoaded', generateCaptcha);
+
+    
   </script>
 </body>
 </html>
