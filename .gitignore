@@ -42,3 +42,13 @@ Thumbs.db
 # IDE specific files
 .vscode/
 .idea/
+
+# save 
+/save
+
+#old
+
+/old
+
+# build
+/build
