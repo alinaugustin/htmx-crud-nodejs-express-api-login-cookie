@@ -28,10 +28,10 @@ router.get('/register', csrfProtection, (req, res) => {
 
 router.post('/register', csrfProtection, async (req, res) => {
     try {
-        const { username, email, password, role, department, captcha } = req.body;
+        const { name, email, password, role, department, captcha } = req.body;
         
         // Add validation here
-        if (!username || !email || !password || !role || !department || !captcha) {
+        if (!name || !email || !password || !role || !department || !captcha) {
             return res.status(400).json({
                 error: 'Toate câmpurile sunt obligatorii'
             });
@@ -55,27 +55,29 @@ router.post('/register', csrfProtection, async (req, res) => {
             });
         }
 
-        console.log('Inregistrare reusita...  : ', username, email, password, role, department, captcha);
+        console.log('Inregistrare reusita...  : ', name, email, password, role, department, captcha);
         // After successful validation, send success response
         // return res.status(200).json({
         //     success: true,
         //     redirect: '/auth/login',
         //     message: 'Înregistrare reușită! Vă rugăm să vă autentificați.'
         // });
-        const data = {
-            username,
+        const responseData = {
+            id: Math.floor(Math.random() * 1000),
+            timestamp: new Date().toISOString(),
+            name,
             email,
-            password,
             role,
             department,
-            captcha
+            message:`Înregistrare reușită pentru utilizator ${name}! Vă rugăm să vă autentificați.`,
         };
-        res.json({
-            success: true,
-            message:`Înregistrare reușită pentru utilizator ${username}! Vă rugăm să vă autentificați.`,
-         });
+        // res.json({
+        //     success: true,
+        //     message:`Înregistrare reușită pentru utilizator ${username}! Vă rugăm să vă autentificați.`,
+        //  });
+          // Send back the processed data
+        res.json(responseData);
 
-        
     } catch (error) {
         console.error('Registration error:', error);
         return res.status(500).json({

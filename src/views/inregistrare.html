@@ -1,15 +1,15 @@
+<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Înregistrare</title>
-    <link rel="stylesheet" href="../../public/css/tailwind.min.css">
-     <script src="../public/js/htmx.min.js"></script>
-    <!-- <script src="https://unpkg.com/htmx.org@1.5.0/dist/htmx.min.js"></script> -->
-    <style>
-        /* Add CSS for notification */
-        .notification-container {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Înregistrare</title>
+  <link rel="stylesheet" href="../../public/css/tailwind.min.css">
+  <!-- HTMX Library -->
+  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+  <style>
+   .notification-container {
             position: fixed;
             top: 1rem;
             right: 1rem;
@@ -36,289 +36,181 @@
         .notification .message {
             font-weight: bold;
         }
-
-        #notificationafter {
-            display: none;
-            padding: 20px;
-            background-color: #4CAF50;
-            color: black;
-            margin-top:20px;
-        }
-
-    </style>
+    #response-container {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      display: none;
+    }
+    .response-visible {
+      display: block !important;
+    }
+    .field {
+      margin-bottom: 5px;
+    }
+    .label {
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body class="bg-gray-100">
-    <!-- Notification container -->
-    <div class="notification-container">
-        <div id="notification" class="notification" role="alert">
-            <span id="notification-message" class="message"></span>
-        </div>
+ 
+  <!-- Notification container -->
+  <div class="notification-container">
+    <div id="notification" class="notification" role="alert">
+        <span id="notification-message" class="message"></span>
     </div>
+</div>
 
-    <!-- Menu -->
-    <nav class="bg-gray-800 p-4">
-        <div class="container mx-auto">
-            <div class="flex justify-between items-center">
-                <div class="text-white text-lg font-bold">
-                    <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                </div>
-                <div class="flex items-center">
-                    <a href="/dashboard" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                    <a href="/sites" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sites</a>
-                    <a href="/auth/login" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
-                </div>
+<!-- Menu -->
+<nav class="bg-gray-800 p-4">
+    <div class="container mx-auto">
+        <div class="flex justify-between items-center">
+            <div class="text-white text-lg font-bold">
+                <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+            </div>
+            <div class="flex items-center">
+                <a href="/dashboard" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                <a href="/sites" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sites</a>
+                <a href="/auth/login" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <div class="container mx-auto p-4">
-        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-bold mb-6 text-center">Înregistrare Utilizator Nou</h2>
-            
-            <!-- Update the form tag to include error handling -->
-            <form id="register-form" 
-                hx-post="/auth/register" 
-                hx-target="#notificationafter"
-                hx-swap="innerHTML show:5s"
-                hx-on::after-request="handleRegistrationResponse(event)"
-                class="space-y-4">
-                <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-                        Nume Utilizator
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="username" name="username" type="text" autocomplete="username" required>
-                </div>
+<div class="container mx-auto p-4">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold mb-6 text-center">Înregistrare Utilizator Nou</h2>
 
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                        Email
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="email" name="email" type="email" autocomplete="email" required>
-                </div>
-
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                        Parolă
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="password" name="password" type="password" autocomplete="new-password" required>
-                </div>
-
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="role">
-                        Rol
-                    </label>
-                    <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="role" name="role" required>
-                        <option value="">Selectează un rol</option>
-                        <option value="user">Utilizator</option>
-                        <option value="editor">Editor</option>
-                        <option value="admin">Administrator</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="department">
-                        Departament
-                    </label>
-                    <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="department" name="department" required>
-                        <option value="">Selectează departamentul</option>
-                        <option value="it">IT</option>
-                        <option value="hr">HR</option>
-                        <option value="finance">Financiar</option>
-                        <option value="sales">Vânzări</option>
-                        <option value="marketing">Marketing</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="captcha">
-                        Verificare de securitate
-                    </label>
-                    <div class="flex items-center space-x-4">
-                        <div id="captcha-display" class="bg-gray-200 px-4 py-2 rounded select-none font-mono text-lg"></div>
-                        <button type="button" onclick="generateCaptcha()" class="bg-gray-500 hover:bg-gray-700 text-white px-2 py-1 rounded">
-                            ↻
-                        </button>
-                    </div>
-                    <input class="mt-2 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="captcha-input" name="captcha" type="text" autocomplete="off" required placeholder="Introduceți codul de mai sus">
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        type="submit">
-                        Înregistrare
-                    </button>
-                    <a href="/auth/login" class="text-blue-500 hover:text-blue-700 text-sm">
-                        Ai deja cont? Conectează-te
-                    </a>
-                </div>
-
-                <div id="notificationafter"></div>
-            </form>
-        </div>
+  <form hx-post="/auth/register" 
+        hx-trigger="submit" 
+        hx-target="#response-container"
+        hx-on::after-request="processResponse(event)">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+            Nume Utilizator
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="name" name="name" type="text" autocomplete="name" required>
     </div>
 
-    <footer class="bg-gray-800 p-4 mt-8">
-        <div class="container mx-auto text-center text-white">
-            <p>&copy; 2025 Your Company. All rights reserved.</p>
+    <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+            Email
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="email" name="email" type="email" autocomplete="email" required>
+    </div>
+
+    <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+            Parolă
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="password" name="password" type="password" autocomplete="new-password" required>
+    </div>
+
+    <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="role">
+            Rol
+        </label>
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="role" name="role" required>
+            <option value="">Selectează un rol</option>
+            <option value="user">Utilizator</option>
+            <option value="editor">Editor</option>
+            <option value="admin">Administrator</option>
+        </select>
+    </div>
+
+    <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="department">
+            Departament
+        </label>
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="department" name="department" required>
+            <option value="">Selectează departamentul</option>
+            <option value="it">IT</option>
+            <option value="hr">HR</option>
+            <option value="finance">Financiar</option>
+            <option value="sales">Vânzări</option>
+            <option value="marketing">Marketing</option>
+        </select>
+    </div>
+
+    <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="captcha">
+            Verificare de securitate
+        </label>
+        <div class="flex items-center space-x-4">
+            <div id="captcha-display" class="bg-gray-200 px-4 py-2 rounded select-none font-mono text-lg"></div>
+            <button type="button" onclick="generateCaptcha()" class="bg-gray-500 hover:bg-gray-700 text-white px-2 py-1 rounded">
+                ↻
+            </button>
         </div>
-    </footer>
+        <input class="mt-2 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="captcha-input" name="captcha" type="text" autocomplete="off" required placeholder="Introduceți codul de mai sus">
+    </div>
 
-   
-    <script>
-        let captchaText = '';
-
-        function showNotification(message, type = 'error', duration = 5000) {
-            const notification = document.getElementById('notification');
-            const messageElement = document.getElementById('notification-message');
-
-            // Update notification class based on type
-            notification.classList.remove('success', 'error');
-            notification.classList.add(type);
-
-            messageElement.textContent = message;
-            notification.style.display = 'block';
-
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, duration);
-        }
-
-        function handleRegistrationResponse(event) {
-            const response = event.detail.xhr;
-            console.log('response: ',event.detail.xhr);
-            
-            console.log('responseData3: ',responseData.message);
-            try {
-                const responseData = JSON.parse(response.responseText);
-                console.log('responseData: ',response.responseText);
-                if (responseData.success) {
-                    showNotification(responseData.message, 'success');
-                    console.log('it should be redirecting')
-                    setTimeout(() => {
-                        window.location.href = responseData.redirect; // This handles the redirect
-                    }, 1500);
-                } else {
-                    showNotification(responseData.error || 'A apărut o eroare la înregistrare.', 'error');
-                    generateCaptcha();
-                    document.getElementById('captcha-input').value = '';
-                }
-            } catch (e) {
-                console.error('Error parsing response:', e);
-                showNotification('A apărut o eroare neașteptată.', 'error');
-            }
-        }
-
-        function generateCaptcha() {
-            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            captchaText = '';
-            for (let i = 0; i < 6; i++) {
-                captchaText += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('captcha-display').textContent = captchaText;
-        }
-
-        document.getElementById('register-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const password = document.getElementById('password').value;
-            const email = document.getElementById('email').value;
-            const captchaInput = document.getElementById('captcha-input').value;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-            if (!emailRegex.test(email)) {
-                showNotification('Adresa de email nu este validă', 'error');
-                return;
-            }
-
-            if (password.length < 8) {
-                showNotification('Parola trebuie să aibă cel puțin 8 caractere!', 'error');
-                return;
-            }
-
-            if (captchaInput.toUpperCase() !== captchaText) {
-                showNotification('Codul de verificare este incorect!', 'error');
-                generateCaptcha();
-                document.getElementById('captcha-input').value = '';
-                return;
-            }
-
-            // Let HTMX handle the form submission
-            // The handleRegistrationResponse function will handle the redirect after successful registration
-            // through the response from the server
-        });
-
-        // Add client-side password validation
-        document.getElementById('password').addEventListener('input', function(e) {
-            const password = e.target.value;
-            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-            
-            if (!passwordRegex.test(password)) {
-                e.target.setCustomValidity('Parola trebuie să conțină cel puțin 8 caractere, o literă, o cifră și un caracter special');
-            } else {
-                e.target.setCustomValidity('');
-            }
-        });
-
-        document.getElementById('email').addEventListener('input', function(e) {
-            const email = e.target.value;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            
-            if (!emailRegex.test(email)) {
-                e.target.setCustomValidity('Adresa de email nu este validă');
-            } else {
-                e.target.setCustomValidity('');
-            }
-        });
-
-        // Generate initial captcha on page load
-        document.addEventListener('DOMContentLoaded', generateCaptcha);
-
-        // function testAfterRequest() {
-        //     htmx.on('htmx:afterRequest', function (evt) {
-        //     console.log('evt: ',evt);
-        //     // No need to set display here, it's handled in showNotification
-        //     document.getElementById('notificationafter').style.display = 'block';
-        // }); 
-        // }
-    </script>
-    <!-- <script>
-        htmx.on('htmx:afterRequest', function (evt) {
-            console.log('evt: ',evt);
-            // No need to set display here, it's handled in showNotification
-            document.getElementById('notificationafter').style.display = 'block';
-        });
-    </script> -->
-    <script>
-        htmx.on('htmx:afterRequest', function (evt) {
-            console.log('evt: ',evt);
-            // No need to set display here, it's handled in showNotification
-            const response = evt.detail.xhr;
-            console.log('evt: ',evt.detail.xhr);
-            try {
-                const responseData = JSON.parse(response.responseText);
-                console.log('responseData: ',responseData);
-                document.getElementById('notificationafter').textContent = responseData.message || responseData.error || 'Success!';
-                document.getElementById('notificationafter').style.display = 'block';
-
-                // Check if the registration was successful and redirect
-                if (responseData.success) {
+    <div class="flex items-center justify-between">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit">
+            Înregistrare
+        </button>
+        <a href="/auth/login" class="text-blue-500 hover:text-blue-700 text-sm">
+            Ai deja cont? Conectează-te
+        </a>
+    </div>
+  </form>
+  
+    <div id="response-container"></div>
+    </div>
+    </div>
+    
+  <script>
+    function processResponse(event) {
+      // Only process successful responses
+      console.log('event.detail: ',event.detail);
+      if (event.detail.successful) {
+        const container = document.getElementById('response-container');
+        const response = JSON.parse(event.detail.xhr.response);
+        
+        // Make the container visible
+        container.classList.add('response-visible');
+        
+        // Format and display the response data
+        container.innerHTML = `
+          <h3>Submission Successful!</h3>
+          <div class="field">
+            <span class="label">ID:</span> ${response.id}
+          </div>
+          <div class="field">
+            <span class="label">Name:</span> ${response.name}
+          </div>
+          <div class="field">
+            <span class="label">Email:</span> ${response.email}
+          </div>
+          <div class="field">
+            <span class="label">Timestamp:</span> ${response.timestamp}
+          </div>
+          <div class="field">
+            <span class="label">Message:</span> ${response.message}
+          </div>
+        `;
+        const responseData = JSON.parse(event.detail.successful)
+        console.log('responseData: ',responseData);
+        if (responseData) {
                     setTimeout(() => {
                         window.location.href = '/auth/login';
-                    }, 3000); // Redirect after 2 seconds
+                    }, 5000); // Redirect after 2 seconds
                 }
-            } catch (e) {
-                console.error('Error parsing response:', e);
-                document.getElementById('notificationafter').textContent = 'A apărut o eroare neașteptată.';
-                document.getElementById('notificationafter').style.display = 'block';
-            }
-        });
-    </script>
+        // Clear the form
+        //event.detail.target.reset();
+        document.querySelector('form').reset();
+      }
+    }
+  </script>
 </body>
 </html>
