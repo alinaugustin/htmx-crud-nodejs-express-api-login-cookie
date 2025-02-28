@@ -4,32 +4,34 @@ const jwt = require('jsonwebtoken');
 const xss = require('xss');
 const fs = require('fs');
 const path = require('path');
+//const Login = require('../models/Login');
+const User = require('../models/User');
 
-const users = [
-    {
-        id: 1,
-        name: 'user1',
-        email: 'user1@rocnee.ro',
-        password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
-    },
-    {
-        id: 2,
-        name: 'user2',
-        email: 'user2@rocnee.ro',
-        password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
-    },
-    {
-        id: 3,
-        name: 'user3',
-        email: 'user3@rocnee.ro',
-        password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
-    }
-];
+// const users = [
+//     {
+//         id: 1,
+//         name: 'user1',
+//         email: 'user1@rocnee.ro',
+//         password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
+//     },
+//     {
+//         id: 2,
+//         name: 'user2',
+//         email: 'user2@rocnee.ro',
+//         password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
+//     },
+//     {
+//         id: 3,
+//         name: 'user3',
+//         email: 'user3@rocnee.ro',
+//         password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
+//     }
+// ];
 
 
-const findUserByname = (name) => {
-    return users.find(user => user.name === name);
-};
+// const findUserByname = (name) => {
+//     return users.find(user => user.name === name);
+// };
 
 const authController = {
     login: async (req, res) => {
@@ -38,7 +40,8 @@ const authController = {
         const password = xss(req.body.password);
         console.log('name + password: ', name + " : " + password);
         try {
-            const user = findUserByname(name);
+            //const user = findUserByname(name);
+            const user = await User.findOne({ where: { name } });
             console.log('user: ', user);
             if (!user) {
                 return res.status(401).send('<p> Invalid1 name or password. <br> <a href="/auth/login">Login here</a></p>');

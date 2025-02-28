@@ -7,11 +7,26 @@
     <title>Login</title>
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"> -->
     <link rel="stylesheet" href="../../public/css/tailwind.min.css">
+    <style>
+        /* Make the menu fixed */
+        nav.fixed {
+         position: fixed;
+         top: 0;
+         width: 100%;
+         z-index: 1000;
+       }
+   
+       /* Add some padding to the body to prevent content from being hidden behind the fixed menu */
+       body {
+         padding-top: 60px; /* Adjust this value based on the height of your menu */
+       }
+   </style>
 </head>
+
 
 <body class="bg-gray-100">
     <!-- Menu -->
-    <nav class="bg-gray-800 p-4">
+    <nav class="bg-gray-800 p-4 fixed">
         <div class="container mx-auto">
             <div class="flex justify-between items-center">
                 <div class="text-white text-lg font-bold">
@@ -22,9 +37,8 @@
                         class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
                         <a href="/auth/register"
                         class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
-                    <a href="/dashboard"
-                        class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                    
+                    <!-- <a href="/dashboard"
+                        class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a> -->
                 </div>
             </div>
         </div>

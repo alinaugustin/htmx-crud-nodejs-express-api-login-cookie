@@ -5,42 +5,59 @@ const fs = require('fs');
 const path = require('path');
 const xss = require('xss');
 const pdfMake = require('pdfmake');
+const User = require('../models/User');
 
 // Mock user data
-let users = [
-    {
-        id: 1,
-        name: 'user1',
-        email: 'user1@rocnee.ro',
-        password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
-    },
-    {
-        id: 2,
-        name: 'user2',
-        email: 'user2@rocnee.ro',
-        password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
-    },
-    {
-        id: 3,
-        name: 'user3',
-        email: 'user3@rocnee.ro',
-        password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
-    }
-];
-
+// let users = [
+//     {
+//         id: 1,
+//         name: 'user1',
+//         email: 'user1@rocnee.ro',
+//         password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
+//     },
+//     {
+//         id: 2,
+//         name: 'user2',
+//         email: 'user2@rocnee.ro',
+//         password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
+//     },
+//     {
+//         id: 3,
+//         name: 'user3',
+//         email: 'user3@rocnee.ro',
+//         password: '$2y$10$1CEnor9Yg9Jg3disEIUN.uQegekQLVBSTkLZRCpCzab2897xQ6YiO', // password
+//     }
+// ];
 // Middleware to get user details
 function getUserDetails(req, res, next) {
     console.log('req.cookies:', req.cookies.token);
     const userId = req.cookies.id; // Assuming userId is stored in cookies
-    const user = users.find(u => u.id === parseInt(userId));
-    if (user) {
-        req.user = user;
-        console.log('user getUserDetails:', user);
-    }
-    next();
+    User.findByPk(userId).then(user => {
+        if (user) {
+            req.user = user;
+            console.log('user getUserDetails:', user);
+        }
+        next();
+    }).catch(err => {
+        console.error(err);
+        next();
+    });
 }
 
-router.get('/users', authMiddleware, (req, res) => {
+// Middleware to get user details
+// function getUserDetails(req, res, next) {
+//     console.log('req.cookies:', req.cookies.token);
+//     const userId = req.cookies.id; // Assuming userId is stored in cookies
+//     const user = users.find(u => u.id === parseInt(userId));
+//     if (user) {
+//         req.user = user;
+//         console.log('user getUserDetails:', user);
+//     }
+//     next();
+// }
+
+router.get('/users', authMiddleware, async (req, res) => {
+    const users = await User.findAll();
     const userRows = users.map(user => `
         <tr>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.id}</td>

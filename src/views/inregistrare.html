@@ -42,6 +42,8 @@
       border: 1px solid #ddd;
       border-radius: 4px;
       display: none;
+      background-color: #4CAF50; /* Green background */
+      color: white; /* White text */
     }
     .response-visible {
       display: block !important;
@@ -52,6 +54,19 @@
     .label {
       font-weight: bold;
     }
+   
+     /* Make the menu fixed */
+     nav.fixed {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    body {
+      padding-top: 60px; /* Adjust this value based on the height of your menu */
+    }
+
   </style>
 </head>
 <body class="bg-gray-100">
@@ -64,15 +79,15 @@
 </div>
 
 <!-- Menu -->
-<nav class="bg-gray-800 p-4">
+<nav class="bg-gray-800 p-4 fixed">
     <div class="container mx-auto">
         <div class="flex justify-between items-center">
             <div class="text-white text-lg font-bold">
                 <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
             </div>
             <div class="flex items-center">
-                <a href="/dashboard" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                <a href="/sites" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sites</a>
+                <!-- <a href="/dashboard" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                <a href="/sites" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sites</a> -->
                 <a href="/auth/login" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
             </div>
         </div>
@@ -295,7 +310,7 @@ function showNotification(message, type = 'error', duration = 5000) {
     // Generate initial captcha on page load
     document.addEventListener('DOMContentLoaded', generateCaptcha);
 
-    
+
   </script>
 </body>
 </html>

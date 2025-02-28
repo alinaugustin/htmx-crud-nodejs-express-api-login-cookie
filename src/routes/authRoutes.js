@@ -4,6 +4,9 @@ const authController = require('../controllers/authController');
 const csrf = require('csurf');
 const path = require('path');
 const fs = require('fs');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+
 
 const csrfProtection = csrf({ cookie: true });
 
@@ -55,6 +58,18 @@ router.post('/register', csrfProtection, async (req, res) => {
             });
         }
 
+         // Hash the password
+         const hashedPassword = await bcrypt.hash(password, 10);
+
+         // Save the user to the database
+         const newUser = await User.create({
+             name,
+             email,
+             password: hashedPassword,
+             role,
+             department
+         });
+         
         console.log('Inregistrare reusita...  : ', name, email, password, role, department, captcha);
         // After successful validation, send success response
         // return res.status(200).json({
@@ -63,7 +78,7 @@ router.post('/register', csrfProtection, async (req, res) => {
         //     message: 'Înregistrare reușită! Vă rugăm să vă autentificați.'
         // });
         const responseData = {
-            id: Math.floor(Math.random() * 1000),
+            id: newUser.id,
             timestamp: new Date().toISOString(),
             name,
             email,
